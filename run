@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Paper Digest Run Script
+# Usage: ./run [--dry-run] [--debug]
+
+set -e
+
+# Get project root (same as script directory)
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+cd "$PROJECT_ROOT"
+
+# Check if config exists
+if [ ! -f "config.yaml" ]; then
+    echo "Error: config.yaml not found"
+    echo "Please run ./install first"
+    exit 1
+fi
+
+# Check if Claude CLI is available
+if ! command -v claude &> /dev/null; then
+    echo "Error: Claude CLI not found"
+    echo "Please install it from: https://claude.ai/download"
+    exit 1
+fi
+
+# Ensure uv is in PATH
+if ! command -v uv &> /dev/null; then
+    if [ -f "$HOME/.local/bin/env" ]; then
+        source "$HOME/.local/bin/env"
+    fi
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
+# Run with uv
+echo "Starting Paper Digest..."
+uv run python main.py "$@"

@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# Paper Digest Schedule Manager
+# Usage:
+#   scripts/schedule              - Show current schedule
+#   scripts/schedule daily        - Run daily at 9:00 AM (default)
+#   scripts/schedule daily 14:30  - Run daily at 14:30
+#   scripts/schedule off          - Remove cron job
+
+set -e
+
+# Get project root (parent of scripts directory)
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+RUN_SCRIPT="${PROJECT_ROOT}/run"
+LOG_FILE="${PROJECT_ROOT}/.tmp/cron.log"
+
+# Ensure run script exists and is executable
+if [ ! -f "$RUN_SCRIPT" ]; then
+    echo "Error: run script not found"
+    exit 1
+fi
+chmod +x "$RUN_SCRIPT"
+
+# Function to show current schedule
+show_schedule() {
+    echo "=== Current Schedule ==="
+    echo ""
+    local found=$(crontab -l 2>/dev/null | grep -F "$PROJECT_ROOT" || true)
+
+    if [ -z "$found" ]; then
+        echo "No cron job configured."
+        echo ""
+        echo "To set up automatic daily runs:"
+        echo "  scripts/schedule daily 9:00"
+    else
+        echo "Configured cron job:"
+        echo "  $found"
+        echo ""
+        echo "Logs: $LOG_FILE"
+    fi
+    echo ""
+}
+
+# Function to parse time (HH:MM or HH)
+parse_time() {
+    local time_str="$1"
+
+    if [[ "$time_str" =~ ^([0-9]{1,2}):([0-9]{2})$ ]]; then
+        HOUR="${BASH_REMATCH[1]}"
+        MINUTE="${BASH_REMATCH[2]}"
+    elif [[ "$time_str" =~ ^([0-9]{1,2})$ ]]; then
+        HOUR="${BASH_REMATCH[1]}"
+        MINUTE="0"
+    else
+        echo "Error: Invalid time format. Use HH:MM or HH (e.g., 14:30 or 9)"
+        exit 1
+    fi
+
+    # Validate
+    if [ "$HOUR" -lt 0 ] || [ "$HOUR" -gt 23 ]; then
+        echo "Error: Hour must be 0-23"
+        exit 1
+    fi
+
+    if [ "$MINUTE" -lt 0 ] || [ "$MINUTE" -gt 59 ]; then
+        echo "Error: Minute must be 0-59"
+        exit 1
+    fi
+}
+
+# Function to add cron job
+add_cron() {
+    local hour="$1"
+    local minute="$2"
+
+    # Remove existing entries
+    crontab -l 2>/dev/null | grep -v -F "$PROJECT_ROOT" | crontab - 2>/dev/null || true
+
+    # Add new entry
+    local cron_cmd="$minute $hour * * * cd $PROJECT_ROOT && $RUN_SCRIPT >> $LOG_FILE 2>&1"
+    (crontab -l 2>/dev/null || true; echo "$cron_cmd") | crontab -
+
+    echo "=== Schedule Set ==="
+    echo ""
+    echo "Paper Digest will run daily at ${hour}:$(printf '%02d' $minute)"
+    echo "Logs: $LOG_FILE"
+    echo ""
+}
+
+# Function to remove cron job
+remove_cron() {
+    crontab -l 2>/dev/null | grep -v -F "$PROJECT_ROOT" | crontab - 2>/dev/null || true
+
+    echo "=== Schedule Removed ==="
+    echo ""
+    echo "Cron job has been removed."
+    echo ""
+}
+
+# Main logic
+case "${1:-}" in
+    "")
+        # No argument - show current schedule
+        show_schedule
+        ;;
+
+    "daily")
+        # Daily schedule
+        time_str="${2:-9:00}"
+        parse_time "$time_str"
+        add_cron "$HOUR" "$MINUTE"
+        ;;
+
+    "off"|"remove"|"disable")
+        # Remove cron job
+        remove_cron
+        ;;
+
+    "status"|"show")
+        # Show current schedule
+        show_schedule
+        ;;
+
+    *)
+        echo "Usage:"
+        echo "  scripts/schedule              - Show current schedule"
+        echo "  scripts/schedule daily        - Run daily at 9:00 AM"
+        echo "  scripts/schedule daily 14:30  - Run daily at 14:30"
+        echo "  scripts/schedule off          - Remove cron job"
+        echo ""
+        exit 1
+        ;;
+esac

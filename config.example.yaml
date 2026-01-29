@@ -1,0 +1,113 @@
+# Paper Digest Configuration
+# Copy this file to config.yaml and edit with your preferences
+
+# =============================================================================
+# 관심 분야 설정 (필수)
+# =============================================================================
+interests:
+  # arXiv 카테고리 코드 목록
+  # 참고: https://arxiv.org/category_taxonomy
+  categories:
+    - cs.LG      # Machine Learning
+    - cs.AI      # Artificial Intelligence
+    - cs.CL      # Computation and Language (NLP)
+    # - cs.CV    # Computer Vision
+    # - cs.NE    # Neural and Evolutionary Computing
+    # - stat.ML  # Statistics - Machine Learning
+
+  # 검색 키워드 (논문 제목/초록에서 검색)
+  keywords:
+    - "large language model"
+    - "transformer"
+    - "reinforcement learning"
+    # - "diffusion model"
+    # - "neural network"
+
+# =============================================================================
+# 관심 학회/저널 (선택)
+# 논문 선정 시 우선순위 부여
+# =============================================================================
+venues:
+  conferences:
+    - NeurIPS
+    - ICML
+    - ICLR
+    - ACL
+    - EMNLP
+    # - CVPR
+    # - ICCV
+    # - AAAI
+  journals:
+    - JMLR
+    # - Nature Machine Intelligence
+    # - TMLR
+
+# =============================================================================
+# 관심 저자 (선택)
+# 해당 저자의 논문에 우선순위 부여
+# =============================================================================
+authors:
+  # - "Yann LeCun"
+  # - "Geoffrey Hinton"
+  # - "Yoshua Bengio"
+  # - "Ilya Sutskever"
+
+# =============================================================================
+# 논문 선정 설정
+# =============================================================================
+selection:
+  # 최종 요약할 논문 수
+  num_papers: 2
+
+  # 검색할 최대 후보 논문 수
+  max_candidates: 50
+
+  # 최신 논문만 (최근 N일 이내)
+  days_recent: 7
+
+# =============================================================================
+# 요약 설정
+# =============================================================================
+summary:
+  # 사용할 Claude 모델 (sonnet, opus, haiku)
+  model: "sonnet"
+
+# =============================================================================
+# 출력 설정
+# =============================================================================
+output:
+  # 결과 저장 디렉토리
+  directory: "./digests"
+
+  # 파일명 형식 (strftime format)
+  filename_format: "%Y-%m-%d"
+
+  # HTML 파일도 생성 (Markdown과 함께, 브라우저에서 읽기 편함)
+  html_enabled: true
+
+# =============================================================================
+# 알림 설정
+# =============================================================================
+notification:
+  # macOS 알림 활성화 여부
+  enabled: true
+
+  # 알림 사운드 (macOS 시스템 사운드)
+  # 옵션: Basso, Blow, Bottle, Frog, Funk, Glass, Hero, Morse, Ping, Pop, Purr, Sosumi, Submarine, Tink
+  sound: "Glass"
+
+# =============================================================================
+# 고급 설정
+# =============================================================================
+advanced:
+  # arXiv API 요청 타임아웃 (초)
+  api_timeout: 30
+
+  # 히스토리 파일 경로
+  history_file: "./.tmp/history.json"
+
+  # 히스토리 보관 기간 (일, 0이면 무제한)
+  history_retention_days: 90
+
+  # 디버그 모드
+  debug: false
