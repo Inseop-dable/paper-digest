@@ -101,7 +101,7 @@ if [ ! -f "config.yaml" ]; then
             keyword=$(echo "$keyword" | xargs)  # trim whitespace
             if [ -n "$keyword" ]; then
                 keywords_yaml="${keywords_yaml}    - \"${keyword}\"\n"
-                ((keyword_count++))
+                keyword_count=$((keyword_count + 1))
             fi
         done
 
