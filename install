@@ -196,9 +196,8 @@ advanced:
   debug: false
 CONFIGEOF
 
-    # Replace placeholder with actual keywords
-    sed -i.bak "s/KEYWORDS_PLACEHOLDER/$(echo -e "$keywords_yaml")/" config.yaml
-    rm config.yaml.bak
+    # Use awk to replace KEYWORDS_PLACEHOLDER (portable across macOS/Linux)
+    awk -v keywords="$keywords_yaml" '{gsub(/KEYWORDS_PLACEHOLDER/, keywords); print}' config.yaml > config.yaml.tmp && mv config.yaml.tmp config.yaml
 
     echo ""
     echo "✓ config.yaml 파일이 생성되었습니다."
