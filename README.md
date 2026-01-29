@@ -39,7 +39,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ```bash
 # 이 저장소를 다운로드
-git clone https://github.com/yourusername/paper-digest.git
+git clone https://github.com/Inseop-dable/paper-digest.git
 cd paper-digest
 
 # 설치 실행 (키워드 입력 필요)
@@ -186,8 +186,10 @@ A: 아니요! Claude CLI 구독(Pro/Max)만 있으면 됩니다.
 A: 기본값은 2개예요. `config.yaml`에서 변경 가능합니다.
 
 **Q: 논문을 하나도 못 찾았다고 나와요**
-A: 키워드나 카테고리가 너무 좁을 수 있어요. `config.yaml`에서
-`selection.days_recent` 값을 7에서 30으로 늘려보세요.
+A: 검색된 논문이 없거나 Claude가 선택할 논문이 없는 경우예요.
+`./run --dry-run`을 실행해서 어떤 논문이 검색되는지 확인해보세요.
+키워드가 너무 구체적이면 관련 논문을 찾기 어려울 수 있으니
+더 일반적인 키워드로 바꿔보세요.
 
 **Q: 자동 실행이 잘 되고 있는지 어떻게 확인해요?**
 A: `scripts/schedule` 명령어를 입력하면 현재 설정을 볼 수 있어요.
